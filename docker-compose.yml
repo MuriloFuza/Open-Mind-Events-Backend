@@ -1,0 +1,18 @@
+services:
+  db_prisma:
+    image: postgres
+    container_name: db_prisma_eng_soft
+    ports: 
+      - 5432:5432 
+    restart: always
+    environment: 
+      - POSTGRES_USER=docker
+      - POSTGRES_PASSWORD=docker
+      - POSTGRES_DB=prisma
+    volumes: 
+      - pgdata:/data/postgres
+
+volumes: 
+  pgdata:
+    driver: local
+

@@ -1,0 +1,66 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                          String                        @id @default(uuid())
+  email                       String                        @unique
+  name                        String
+  cpf                         String                        @unique
+  university                  String?
+  key                         String                        @unique
+  role                        Role
+  Event                       Event?
+  List_participants_in_Events List_participants_in_Events[]
+
+  @@map("user")
+}
+
+model Activity {
+  id           String   @id @default(uuid())
+  name         String
+  init_date    DateTime
+  end_date     DateTime
+  speaker_name String?
+  eventId      String?
+  Event        Event?   @relation(fields: [fkEventId], references: [id])
+  fkEventId    String
+
+  @@map("activity")
+}
+
+model Event {
+  id                          String                        @id @default(uuid())
+  name                        String                        @unique
+  init_date                   DateTime
+  end_date                    DateTime
+  visible                     Boolean                       @default(false)
+  banner_url                  String?                       @default("https://i.imgur.com/ZH5Bmpv.jpg")
+  creator                     User                          @relation(fields: [fkIdAdmin], references: [id])
+  activity                    Activity[]
+  fkIdAdmin                   String                        @unique
+  List_participants_in_Events List_participants_in_Events[]
+
+  @@map("event")
+}
+
+model List_participants_in_Events {
+  id             String @id @default(uuid())
+  event          Event  @relation(fields: [eventId], references: [id])
+  eventId        String
+  participantsId User   @relation(fields: [userId], references: [id])
+  userId         String
+}
+
+enum Role {
+  USER
+  ADMIN
+}
