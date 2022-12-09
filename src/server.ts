@@ -2,6 +2,8 @@ import express, { Request, Response } from 'express'
 import { createUser } from './users/useCases/createUsersUseCase/CreateUsersUseCase'
 import { findUserByCPF } from './users/useCases/findUserByCPFUseCase/FindUserByCPFUseCase'
 import { findUserByEmail } from './users/useCases/findUserByEmailUseCase/FindUserByEmailUseCase'
+import { findEventByName } from './events/useCases/findEventByNameUseCase/FindEventByNameUseCase'
+import { createEvent } from './events/useCases/createEventUseCase/CreateEventUserCase'
 
 const app = express()
 
@@ -38,6 +40,42 @@ app.post(`/user/create`, async (req: Request, res: Response) => {
 
   } catch(error) {
     return res.status(400).json({error: `Error: User not created ${error}`})
+  }
+
+})
+
+app.post(`/event/create`, async (req: Request, res: Response) => {
+  
+  const {
+    name,
+    init_date,
+    end_date,
+    visible,
+    banner_url,
+    creator
+  } = req.body
+  
+  try {
+
+    const eventNameAlreadyExists = await findEventByName(name)
+
+    if(eventNameAlreadyExists){
+      return res.json({error: "Event already exists."})
+    }
+
+    const eventId = await createEvent({
+      name,
+      init_date,
+      end_date,
+      visible,
+      banner_url,
+      creator
+    })
+
+    return res.json({message: "Event created", eventId})
+
+  } catch(error) {
+    return res.status(400).json({error: `Error: Event not created ${error}`})
   }
 
 })
