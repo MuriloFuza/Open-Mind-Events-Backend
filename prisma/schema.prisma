@@ -18,7 +18,7 @@ model User {
   university                  String?
   key                         String                        @unique
   role                        Role
-  Event                       Event?
+  Event                       Event[]
   List_participants_in_Events List_participants_in_Events[]
 
   @@map("user")
@@ -46,7 +46,7 @@ model Event {
   banner_url                  String?                       @default("https://i.imgur.com/ZH5Bmpv.jpg")
   creator                     User                          @relation(fields: [fkIdAdmin], references: [id])
   activity                    Activity[]
-  fkIdAdmin                   String                        @unique
+  fkIdAdmin                   String
   List_participants_in_Events List_participants_in_Events[]
 
   @@map("event")
