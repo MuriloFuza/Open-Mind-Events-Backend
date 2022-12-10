@@ -9,6 +9,8 @@ import { findEventById } from './events/useCases/findEventByIdUseCase/FindEventB
 import { createEvent } from './events/useCases/createEventUseCase/CreateEventUserCase'
 import { createActivity } from './activity/createActivityByEventUseCase/CreateActivityByEventUseCase'
 import { listEvents } from './events/useCases/listEventsUseCase/ListEventsUseCase'
+import { registerInEvent } from './events/useCases/registerInEventUseCase/RegisterInEventUseCase'
+import { listParticipants } from './events/useCases/listParticipantsUseCase/ListParticipantsUseCase'
 
 const app = express()
 
@@ -18,6 +20,8 @@ app.get(`/`, async (req: Request, res: Response) => {
     return res.json({message: 'True'})
 })
 
+
+//user
 app.post(`/user/create`, async (req: Request, res: Response) => {
   
   const {
@@ -44,7 +48,8 @@ app.post(`/user/create`, async (req: Request, res: Response) => {
     return res.json({message: "User created!", key})
 
   } catch(error) {
-    return res.status(400).json({error: `Error: User not created ${error}`})
+    console.log(error)
+    return res.status(400).json({error: `Error: User not created`})
   }
 
 })
@@ -109,6 +114,7 @@ app.get(`/user/findUserByKey`, async (req: Request, res: Response) => {
 
 })
 
+//end user
 
 //events
 app.post(`/event/create`, async (req: Request, res: Response) => {
@@ -143,7 +149,7 @@ app.post(`/event/create`, async (req: Request, res: Response) => {
 
   } catch(error) {
     console.log(error)
-    return res.status(400).json({error: `Error: Event not created ${error}`})
+    return res.status(400).json({error: `Error: Event not created`})
   }
 
 })
@@ -162,34 +168,53 @@ app.get(`/event/list`, async (req: Request, res: Response) => {
 
 })
 
-app.get(`/event/findEventByName`, async (req: Request, res: Response) => {
+app.post(`/event/registerInEvent`, async (req: Request, res: Response) => {
+
+  const {
+    eventId,
+    userKey
+  } = req.body
 
   try{
-    const name = req.query.name as string;
-    const event = await findEventByName(name)
-
-    return res.status(200).json(event)
+    const result = await registerInEvent({
+      eventId,
+      userKey
+    })
+  
+    if(result == true){
+      return res.status(200).json({message: "Successfully registered!"})
+    }
 
   }catch(error){
     console.log(error)
-    return res.status(400).json({error: `Error: Unable to find event by name`})
+    return res.status(400).json({error: `Error: Could not register:`})
   }
+
 
 })
 
-app.get(`/event/findEventById`, async (req: Request, res: Response) => {
+app.get(`/event/listParticipants`, async (req: Request, res: Response) => {
+
+  const {
+    eventId
+  } = req.body
 
   try{
-    const id = req.query.id as string;
-    const event = await findEventById(id)
-
-    return res.status(200).json(event)
-
-  }catch(error){
-    console.log(error)
-    return res.status(400).json({error: `Error: Unable to find event by Id`})
+    const list = await listParticipants({
+      eventId
+    })
+  
+    if( list.length === 0 ){
+      return res.status(200).json({message: "There are no participants in this event" })
+    }
+  
+    return res.status(200).json({list})
   }
-
+  catch(error){
+    console.log(error)
+    return res.status(400).json({error: "Error: It was not possible to list the participants of the event"})
+  }
+  
 })
 
 // end events
@@ -218,7 +243,8 @@ app.post(`/activity/create`, async (req: Request, res: Response) => {
     return res.json({message: `Activity created`, activity})
 
   }catch(error){
-    return res.json({error: `Error: Activity not created: ${error}`, })
+    console.log(error)
+    return res.json({error: `Error: Activity not created`, })
   }
 
 })
