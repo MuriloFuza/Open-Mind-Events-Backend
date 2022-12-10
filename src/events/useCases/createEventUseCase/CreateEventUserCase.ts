@@ -8,7 +8,7 @@ interface IEventRequest {
   end_date: Date,
   visible: boolean,
   banner_url: string,
-  creator: User,
+  creator: string,
 }
 
 async function createEvent(data: IEventRequest): Promise<string> {
@@ -22,7 +22,7 @@ async function createEvent(data: IEventRequest): Promise<string> {
       banner_url: data.banner_url,
       creator: {
         connect: {
-            id: data.creator.id
+            id: data.creator
         }
       }
     }
