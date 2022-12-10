@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { findUserByKey } from "../../../users/useCases/findUserByKey/FindUserByKeyUseCase";
+import { findUserByKey } from "../../../users/useCases/FindUserByKeyUseCase/FindUserByKeyUseCase";
 
 const prisma = new PrismaClient()
 
