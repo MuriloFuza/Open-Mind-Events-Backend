@@ -4,6 +4,8 @@ import { findUserByCPF } from './users/useCases/findUserByCPFUseCase/FindUserByC
 import { findUserByEmail } from './users/useCases/findUserByEmailUseCase/FindUserByEmailUseCase'
 import { findEventByName } from './events/useCases/findEventByNameUseCase/FindEventByNameUseCase'
 import { createEvent } from './events/useCases/createEventUseCase/CreateEventUserCase'
+import { createActivity } from './activity/createActivityByEventUseCase/CreateActivityByEventUseCase'
+import { listEvents } from './events/useCases/listEventsUseCase/ListEventsUseCase'
 
 const app = express()
 
@@ -44,6 +46,8 @@ app.post(`/user/create`, async (req: Request, res: Response) => {
 
 })
 
+
+//events
 app.post(`/event/create`, async (req: Request, res: Response) => {
   
   const {
@@ -75,10 +79,60 @@ app.post(`/event/create`, async (req: Request, res: Response) => {
     return res.json({message: "Event created", eventId})
 
   } catch(error) {
+    console.log(error)
     return res.status(400).json({error: `Error: Event not created ${error}`})
   }
 
 })
+
+app.get(`/event/list`, async (req: Request, res: Response) => {
+
+  try{
+    const events = await listEvents()
+
+    return res.status(200).json(events)
+
+  }catch(error){
+    console.log(error)
+    return res.status(400).json({error: `Error: Unable to list events`})
+  }
+
+})
+
+// end events
+
+//activity
+app.post(`/activity/create`, async (req: Request, res: Response) => {
+
+  const {
+    name,
+    init_date,
+    end_date,
+    speaker_name,
+    event_id
+  } = req.body
+
+  try{
+
+    const activity = await createActivity({
+      name,
+      init_date,
+      end_date,
+      speaker_name,
+      event_id
+    })
+
+    return res.json({message: `Activity created`, activity})
+
+  }catch(error){
+    return res.json({error: `Error: Activity not created: ${error}`, })
+  }
+
+})
+
+//end activity
+
+
 
 app.listen(3000, () => console.log(`
 🚀 Server ready at: http://localhost:3000`))
