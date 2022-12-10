@@ -4,6 +4,8 @@ import { findUserById } from './users/useCases/findUserByIdUseCase/FindUserByIdU
 import { findUserByCPF } from './users/useCases/findUserByCPFUseCase/FindUserByCPFUseCase'
 import { findUserByEmail } from './users/useCases/findUserByEmailUseCase/FindUserByEmailUseCase'
 import { findUserByKey } from './users/useCases/findUserByKeyUseCase/FindUserByKeyUseCase'
+import { updateUser } from './users/useCases/updateUserUseCase/UpdateUserUseCase'
+import { deleteUser } from './users/useCases/deleteUserUseCase/DeleteUserUseCase'
 import { findEventByName } from './events/useCases/findEventByNameUseCase/FindEventByNameUseCase'
 import { findEventById } from './events/useCases/findEventByIdUseCase/FindEventByIdUseCase'
 import { createEvent } from './events/useCases/createEventUseCase/CreateEventUserCase'
@@ -11,6 +13,11 @@ import { createActivity } from './activity/createActivityByEventUseCase/CreateAc
 import { listEvents } from './events/useCases/listEventsUseCase/ListEventsUseCase'
 import { registerInEvent } from './events/useCases/registerInEventUseCase/RegisterInEventUseCase'
 import { listParticipants } from './events/useCases/listParticipantsUseCase/ListParticipantsUseCase'
+import { updateEvent } from './events/useCases/updateEventUseCase/UpdateEventUseCase'
+import { updateActivity } from './activity/updateActivityUseCase/UpdateActivityUseCase'
+import { findActivityById } from './activity/findActivityByIdUseCase/FindActivityByIdUseCase'
+import { deleteActivity } from './activity/deleteActivityUseCase/DeleteActivityUseCase'
+import { deleteEvent } from './events/useCases/deleteEventUseCase/DeleteEventUseCase'
 
 const app = express()
 
@@ -110,6 +117,64 @@ app.get(`/user/findUserByKey`, async (req: Request, res: Response) => {
   }catch(error){
     console.log(error)
     return res.status(400).json({error: `Error: Unable to find user`})
+  }
+
+})
+
+app.put(`/user/update`, async (req: Request, res: Response) => {
+  
+  const {
+    id,
+    name,
+    email,
+    cpf,
+  } = req.body
+  
+  try {
+
+    const user = await findUserById(id)
+    
+    if(user == null) {
+      return res.json({error: "User ID doesn`t exist"})
+    }
+
+    const key = await updateUser({
+      id,
+      name,
+      cpf,
+      email,
+    })
+
+    return res.json({message: "User Updated"})
+
+  } catch(error) {
+    console.log(error)
+    return res.status(400).json({error: `Error: User not created`})
+  }
+
+})
+
+app.delete(`/user/delete`, async (req: Request, res: Response) => {
+  
+  const {
+    id,
+  } = req.body
+  
+  try {
+
+    const user = await findUserById(id)
+    
+    if(user == null) {
+      return res.json({error: "User ID doesn`t exist"})
+    }
+
+    const key = await deleteUser(id)
+
+    return res.json({message: "User Deleted"})
+
+  } catch(error) {
+    console.log(error)
+    return res.status(400).json({error: `Error: User not deleted`})
   }
 
 })
@@ -217,6 +282,70 @@ app.get(`/event/listParticipants`, async (req: Request, res: Response) => {
   
 })
 
+app.put(`/event/update`, async (req: Request, res: Response) => {
+  
+  const {
+    id,
+    name,
+    init_date,
+    end_date,
+    visible,
+    banner_url,
+    creator
+  } = req.body
+  
+  try {
+
+    const event = await findEventById(id)
+    
+    if(event == null) {
+      return res.json({error: "Event ID doesn`t exist"})
+    }
+
+    const key = await updateEvent({
+      id,
+      name,
+      init_date,
+      end_date,
+      visible,
+      banner_url,
+      creator
+    })
+
+    return res.json({message: "Event Updated"})
+
+  } catch(error) {
+    console.log(error)
+    return res.status(400).json({error: `Error: Event not updated`})
+  }
+
+})
+
+app.delete(`/event/delete`, async (req: Request, res: Response) => {
+  
+  const {
+    id,
+  } = req.body
+  
+  try {
+
+    const user = await findEventById(id)
+    
+    if(user == null) {
+      return res.json({error: "Event ID doesn`t exist"})
+    }
+
+    const key = await deleteEvent(id)
+
+    return res.json({message: "Event Deleted"})
+
+  } catch(error) {
+    console.log(error)
+    return res.status(400).json({error: `Error: Event not deleted`})
+  }
+
+})
+
 // end events
 
 //activity
@@ -245,6 +374,68 @@ app.post(`/activity/create`, async (req: Request, res: Response) => {
   }catch(error){
     console.log(error)
     return res.json({error: `Error: Activity not created`, })
+  }
+
+})
+
+app.put(`/activity/update`, async (req: Request, res: Response) => {
+  
+  const {
+    id,
+    name,
+    init_date,
+    end_date,
+    speaker_name,
+    event_id
+  } = req.body
+  
+  try {
+
+    const event = await findActivityById(id)
+    
+    if(event == null) {
+      return res.json({error: "Activity ID doesn`t exist"})
+    }
+
+    const key = await updateActivity({
+      id,
+      name,
+      init_date,
+      end_date,
+      speaker_name,
+      event_id
+    })
+
+    return res.json({message: "Activity Updated"})
+
+  } catch(error) {
+    console.log(error)
+    return res.status(400).json({error: `Error: Activity not updated`})
+  }
+
+})
+
+app.delete(`/activity/delete`, async (req: Request, res: Response) => {
+  
+  const {
+    id,
+  } = req.body
+  
+  try {
+
+    const user = await findActivityById(id)
+    
+    if(user == null) {
+      return res.json({error: "Activity ID doesn`t exist"})
+    }
+
+    const key = await deleteActivity(id)
+
+    return res.json({message: "Activity Deleted"})
+
+  } catch(error) {
+    console.log(error)
+    return res.status(400).json({error: `Error: Activity not deleted`})
   }
 
 })
