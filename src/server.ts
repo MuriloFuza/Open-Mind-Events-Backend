@@ -1,8 +1,11 @@
 import express, { Request, Response } from 'express'
 import { createUser } from './users/useCases/createUsersUseCase/CreateUsersUseCase'
+import { findUserById } from './users/useCases/findUserByIdUseCase/FindUserByIdUseCase'
 import { findUserByCPF } from './users/useCases/findUserByCPFUseCase/FindUserByCPFUseCase'
 import { findUserByEmail } from './users/useCases/findUserByEmailUseCase/FindUserByEmailUseCase'
+import { findUserByKey } from './users/useCases/findUserByKeyUseCase/FindUserByKeyUseCase'
 import { findEventByName } from './events/useCases/findEventByNameUseCase/FindEventByNameUseCase'
+import { findEventById } from './events/useCases/findEventByIdUseCase/FindEventByIdUseCase'
 import { createEvent } from './events/useCases/createEventUseCase/CreateEventUserCase'
 import { createActivity } from './activity/createActivityByEventUseCase/CreateActivityByEventUseCase'
 import { listEvents } from './events/useCases/listEventsUseCase/ListEventsUseCase'
@@ -42,6 +45,66 @@ app.post(`/user/create`, async (req: Request, res: Response) => {
 
   } catch(error) {
     return res.status(400).json({error: `Error: User not created ${error}`})
+  }
+
+})
+
+app.get(`/user/findUserById`, async (req: Request, res: Response) => {
+
+  try{
+    const id = req.query.id as string;
+    const event = await findUserById(id)
+
+    return res.status(200).json(event)
+
+  }catch(error){
+    console.log(error)
+    return res.status(400).json({error: `Error: Unable to find user`})
+  }
+
+})
+
+app.get(`/user/findUserByCPF`, async (req: Request, res: Response) => {
+
+  try{
+    const cpf = req.query.cpf as string;
+    const event = await findUserByCPF(cpf)
+
+    return res.status(200).json(event)
+
+  }catch(error){
+    console.log(error)
+    return res.status(400).json({error: `Error: Unable to find user`})
+  }
+
+})
+
+app.get(`/user/findUserByEmail`, async (req: Request, res: Response) => {
+
+  try{
+    const email = req.query.email as string;
+    const event = await findUserByEmail(email)
+
+    return res.status(200).json(event)
+
+  }catch(error){
+    console.log(error)
+    return res.status(400).json({error: `Error: Unable to find user`})
+  }
+
+})
+
+app.get(`/user/findUserByKey`, async (req: Request, res: Response) => {
+
+  try{
+    const key = req.query.key as string;
+    const event = await findUserByKey(key)
+
+    return res.status(200).json(event)
+
+  }catch(error){
+    console.log(error)
+    return res.status(400).json({error: `Error: Unable to find user`})
   }
 
 })
@@ -95,6 +158,36 @@ app.get(`/event/list`, async (req: Request, res: Response) => {
   }catch(error){
     console.log(error)
     return res.status(400).json({error: `Error: Unable to list events`})
+  }
+
+})
+
+app.get(`/event/findEventByName`, async (req: Request, res: Response) => {
+
+  try{
+    const name = req.query.name as string;
+    const event = await findEventByName(name)
+
+    return res.status(200).json(event)
+
+  }catch(error){
+    console.log(error)
+    return res.status(400).json({error: `Error: Unable to find event by name`})
+  }
+
+})
+
+app.get(`/event/findEventById`, async (req: Request, res: Response) => {
+
+  try{
+    const id = req.query.id as string;
+    const event = await findEventById(id)
+
+    return res.status(200).json(event)
+
+  }catch(error){
+    console.log(error)
+    return res.status(400).json({error: `Error: Unable to find event by Id`})
   }
 
 })
