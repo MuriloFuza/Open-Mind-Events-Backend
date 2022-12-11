@@ -44,7 +44,7 @@ model Event {
   end_date                    DateTime
   visible                     Boolean                       @default(false)
   banner_url                  String?                       @default("https://i.imgur.com/ZH5Bmpv.jpg")
-  creator                     User                          @relation(fields: [fkIdAdmin], references: [id])
+  creator                     User                          @relation(fields: [fkIdAdmin], references: [id], onDelete: Cascade)
   activity                    Activity[]
   fkIdAdmin                   String
   List_participants_in_Events List_participants_in_Events[]
@@ -56,7 +56,7 @@ model List_participants_in_Events {
   id             String @id @default(uuid())
   event          Event  @relation(fields: [eventId], references: [id])
   eventId        String
-  participantsId User   @relation(fields: [userId], references: [id])
+  participantsId User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId         String
 }
 
