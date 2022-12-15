@@ -310,13 +310,23 @@ app.put(`/event/update`, async (req: Request, res: Response) => {
   
   try {
 
+    const admin = await findUserByKey(creator)
+
+    if(admin === null){
+      return res.json({error: "Invalid Key"})
+    }
+
+    if(admin.role !== 'ADMIN'){
+      return res.json({error: "Only administrators can perform this operation."})
+    }
+
     const event = await findEventById(id)
     
-    if(event == null) {
+    if(event === null) {
       return res.json({error: "Event ID doesn`t exist"})
     }
 
-    const key = await updateEvent({
+    await updateEvent({
       id,
       name,
       init_date,

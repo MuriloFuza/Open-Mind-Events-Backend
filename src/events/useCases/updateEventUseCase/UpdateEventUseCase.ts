@@ -17,19 +17,13 @@ async function updateEvent(data: IEventRequest): Promise<void> {
   await prisma.event.update({
     where: {
         id: data.id,
-        name: data.name
     },
     data:{
       name: data.name,
       init_date: data.init_date,
       end_date: data.end_date,
-      visible: data.visible,
+      visible: true,
       banner_url: data.banner_url,
-      creator: {
-        connect: {
-            id: data.creator
-        }
-      }
     }
   })
 
