@@ -7,6 +7,7 @@ interface IUserRequest {
   name: string,
   email:  string,
   cpf:  string,
+  university: string
 }
 
 async function createUser(data: IUserRequest): Promise<String> {
@@ -19,6 +20,7 @@ async function createUser(data: IUserRequest): Promise<String> {
       email: data.email,
       cpf: data.cpf,
       role: "USER",
+      university: data.university,
       key,
     }
   })

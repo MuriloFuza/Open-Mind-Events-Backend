@@ -18,9 +18,11 @@ import { updateActivity } from './activity/updateActivityUseCase/UpdateActivityU
 import { findActivityById } from './activity/findActivityByIdUseCase/FindActivityByIdUseCase'
 import { deleteActivity } from './activity/deleteActivityUseCase/DeleteActivityUseCase'
 import { deleteEvent } from './events/useCases/deleteEventUseCase/DeleteEventUseCase'
+import cors from 'cors'
 
 const app = express()
 
+app.use(cors())
 app.use(express.json())
 
 app.get(`/`, async (req: Request, res: Response) => {
@@ -35,6 +37,7 @@ app.post(`/user/create`, async (req: Request, res: Response) => {
     name,
     email,
     cpf,
+    university
   } = req.body
   
   try {
@@ -50,6 +53,7 @@ app.post(`/user/create`, async (req: Request, res: Response) => {
       name,
       cpf,
       email,
+      university
     })
 
     return res.json({message: "User created!", key})
@@ -206,7 +210,7 @@ app.post(`/event/create`, async (req: Request, res: Response) => {
       init_date,
       end_date,
       visible,
-      banner_url,
+      banner_url: banner_url ?? 'https://i.imgur.com/ZH5Bmpv.jpg',
       creator
     })
 
@@ -346,6 +350,20 @@ app.delete(`/event/delete`, async (req: Request, res: Response) => {
 
 })
 
+app.get(`/event/findById`, async (req: Request, res: Response) => {
+
+  console.log(req)
+
+  const { id_event} = req.headers;
+  
+  console.log(id_event)
+
+  const event = await findEventById(id_event)
+
+  return res.status(200).json(event)
+
+})
+
 // end events
 
 //activity
@@ -444,5 +462,5 @@ app.delete(`/activity/delete`, async (req: Request, res: Response) => {
 
 
 
-app.listen(3000, () => console.log(`
-🚀 Server ready at: http://localhost:3000`))
+app.listen(8001, () => console.log(`
+🚀 Server ready at: http://localhost:8001`))
