@@ -22,7 +22,7 @@ async function createEvent(data: IEventRequest): Promise<string> {
       banner_url: data.banner_url,
       creator: {
         connect: {
-            id: data.creator
+            key: data.creator
         }
       }
     }

@@ -205,6 +205,16 @@ app.post(`/event/create`, async (req: Request, res: Response) => {
       return res.json({error: "Event already exists."})
     }
 
+    const admin = await findUserByKey(creator)
+
+    if(admin === null){
+      return res.json({error: "Invalid Key"})
+    }
+
+    if(admin.role !== 'ADMIN'){
+      return res.json({error: "Only administrators can perform this operation."})
+    }
+
     const eventId = await createEvent({
       name,
       init_date,
@@ -329,17 +339,24 @@ app.delete(`/event/delete`, async (req: Request, res: Response) => {
   
   const {
     id,
+    key
   } = req.body
   
   try {
 
-    const user = await findEventById(id)
+    const event = await findEventById(id)
+
+    const admin = await findUserByKey(key)
+
+    if(admin.role !== 'ADMIN'){
+      return res.json({error: "Only administrators can perform this operation."})
+    }
     
-    if(user == null) {
+    if(event == null) {
       return res.json({error: "Event ID doesn`t exist"})
     }
 
-    const key = await deleteEvent(id)
+    await deleteEvent(id)
 
     return res.json({message: "Event Deleted"})
 
@@ -352,11 +369,7 @@ app.delete(`/event/delete`, async (req: Request, res: Response) => {
 
 app.get(`/event/findById`, async (req: Request, res: Response) => {
 
-  console.log(req)
-
   const { id_event} = req.headers;
-  
-  console.log(id_event)
 
   const event = await findEventById(id_event)
 

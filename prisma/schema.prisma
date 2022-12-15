@@ -31,7 +31,7 @@ model Activity {
   end_date     DateTime
   speaker_name String?
   eventId      String?
-  Event        Event?   @relation(fields: [fkEventId], references: [id])
+  Event        Event?   @relation(fields: [fkEventId], references: [id], onDelete: Cascade)
   fkEventId    String
 
   @@map("activity")
@@ -54,7 +54,7 @@ model Event {
 
 model List_participants_in_Events {
   id             String @id @default(uuid())
-  event          Event  @relation(fields: [eventId], references: [id])
+  event          Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
   eventId        String
   participantsId User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId         String
