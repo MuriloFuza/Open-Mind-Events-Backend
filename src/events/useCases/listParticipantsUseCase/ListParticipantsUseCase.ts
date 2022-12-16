@@ -2,15 +2,12 @@ import { List_participants_in_Events, PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient()
 
-interface IRequest {
-  eventId: string,
-}
 
-async function listParticipants(data: IRequest): Promise<any>{
+async function listParticipants(eventId: any): Promise<any>{
 
   const list = await prisma.list_participants_in_Events.findMany({
     where: {
-      eventId: data.eventId
+      eventId
     },
     include: {
       participantsId: true

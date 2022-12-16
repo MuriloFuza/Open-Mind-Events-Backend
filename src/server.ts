@@ -19,6 +19,7 @@ import { findActivityById } from './activity/findActivityByIdUseCase/FindActivit
 import { deleteActivity } from './activity/deleteActivityUseCase/DeleteActivityUseCase'
 import { deleteEvent } from './events/useCases/deleteEventUseCase/DeleteEventUseCase'
 import cors from 'cors'
+import { participantInEvent } from './events/useCases/participantInEventUseCase/ParticipantInEventUseCase'
 
 const app = express()
 
@@ -254,13 +255,19 @@ app.post(`/event/registerInEvent`, async (req: Request, res: Response) => {
     userKey
   } = req.body
 
+  const user = await findUserByKey(userKey)
+
+  if(!user){
+    return res.status(400).json({error: `Error: User not exists:`})
+  }
+
   try{
     const result = await registerInEvent({
       eventId,
-      userKey
+      userId: user.id
     })
   
-    if(result == true){
+    if(result === true){
       return res.status(200).json({message: "Successfully registered!"})
     }
 
@@ -275,13 +282,13 @@ app.post(`/event/registerInEvent`, async (req: Request, res: Response) => {
 app.get(`/event/listParticipants`, async (req: Request, res: Response) => {
 
   const {
-    eventId
-  } = req.body
+    event_id
+  } = req.headers
+
+  console.log(event_id)
 
   try{
-    const list = await listParticipants({
-      eventId
-    })
+    const list = await listParticipants(event_id)
   
     if( list.length === 0 ){
       return res.status(200).json({message: "There are no participants in this event" })
@@ -294,6 +301,22 @@ app.get(`/event/listParticipants`, async (req: Request, res: Response) => {
     return res.status(400).json({error: "Error: It was not possible to list the participants of the event"})
   }
   
+})
+
+app.get(`/event/participantInEvent`, async(req: Request, res: Response)  => {
+
+  const {user_key, event_id} = req.headers
+
+  const user = await findUserByKey(user_key as string)
+
+  if(!user){
+    return res.status(400).json({error: `Error: User not exists:`})
+  }
+
+  const list = await participantInEvent(event_id, user.id)
+
+  return res.json(list)
+
 })
 
 app.put(`/event/update`, async (req: Request, res: Response) => {
@@ -397,10 +420,17 @@ app.post(`/activity/create`, async (req: Request, res: Response) => {
     init_date,
     end_date,
     speaker_name,
-    event_id
+    event_id, 
+    key
   } = req.body
 
   try{
+
+    const admin = await findUserByKey(key)
+
+    if(admin.role !== 'ADMIN'){
+      return res.json({error: "Only administrators can perform this operation."})
+    }
 
     const activity = await createActivity({
       name,
@@ -460,17 +490,28 @@ app.delete(`/activity/delete`, async (req: Request, res: Response) => {
   
   const {
     id,
+    key
   } = req.body
   
   try {
 
-    const user = await findActivityById(id)
+    const user = await findUserByKey(key)
+
+    if(!user){
+      return res.status(400).json({error: `Error: User not exists:`})
+    }
+
+    if(user.role !== 'ADMIN'){
+      return res.status(400).json({error: `Error: User is not admin:`})
+    }
+
+    const activity = await findActivityById(id)
     
-    if(user == null) {
+    if(activity == null) {
       return res.json({error: "Activity ID doesn`t exist"})
     }
 
-    const key = await deleteActivity(id)
+    await deleteActivity(id)
 
     return res.json({message: "Activity Deleted"})
 

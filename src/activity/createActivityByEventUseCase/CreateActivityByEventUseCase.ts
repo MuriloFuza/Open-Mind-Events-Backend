@@ -16,8 +16,8 @@ async function createActivity(data: IRequest): Promise<Activity>{
     data: {
       name: data.name,
       speaker_name: data.speaker_name,
-      init_date: data.init_date,
-      end_date: data.end_date,
+      init_date: new Date( data.init_date),
+      end_date: new Date( data.end_date),
       eventId: data.event_id,
       Event: {
         connect: {

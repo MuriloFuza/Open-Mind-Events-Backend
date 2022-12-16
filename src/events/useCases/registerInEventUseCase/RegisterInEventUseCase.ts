@@ -5,27 +5,19 @@ const prisma = new PrismaClient()
 
 interface IRequest{
   eventId: string,
-  userKey: string
+  userId: string
 }
 
 async function registerInEvent(data: IRequest): Promise<boolean>{
 
-  try{
+  await prisma.list_participants_in_Events.create({
+    data:{
+      eventId: data.eventId,
+      userId: data.userId,
+    }
+  })
 
-    const user = await findUserByKey(data.userKey)
-
-    await prisma.list_participants_in_Events.create({
-      data:{
-        eventId: data.eventId,
-        userId: user.id,
-      }
-    })
-
-    return true
-  }catch{
-    return false
-  }
-  
+  return true
 }
 
 export {registerInEvent}

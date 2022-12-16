@@ -5,7 +5,10 @@ const prisma = new PrismaClient
 async function findEventById(id: any): Promise<any> {
 
   const event = await prisma.event.findFirst({
-    where: {id}
+    where: {id},
+    include:{
+      activity: true
+    }
   })
 
   return event
